@@ -1,4 +1,3 @@
-use base64::{Engine as _, engine::general_purpose};
 use solana_program::{instruction::Instruction, pubkey::Pubkey};
 use solana_sdk::signature::Keypair;
 use std::str::FromStr;
@@ -35,6 +34,6 @@ pub fn instruction_to_response(instruction: Instruction) -> InstructionData {
     InstructionData {
         program_id: instruction.program_id.to_string(),
         accounts,
-        instruction_data: general_purpose::STANDARD.encode(&instruction.data),
+        instruction_data: instruction.data.iter().map(|b| format!("{:02x}", b)).collect::<String>(),
     }
 } 

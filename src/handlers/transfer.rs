@@ -1,5 +1,4 @@
 use axum::{extract::Json, http::StatusCode, response::Json as ResponseJson};
-use base64::{Engine as _, engine::general_purpose};
 use solana_program::system_instruction;
 use spl_token::instruction as token_instruction;
 
@@ -21,7 +20,7 @@ pub async fn send_sol(
     };
     
     let lamports = match req.lamports {
-        Some(val) if val > 0 => val,
+        Some(val) => val,
         _ => return (StatusCode::BAD_REQUEST, ResponseJson(ApiResponse::error("Missing required fields".to_string()))),
     };
 
@@ -40,7 +39,7 @@ pub async fn send_sol(
     let response_data = SolTransferData {
         program_id: instruction.program_id.to_string(),
         accounts: instruction.accounts.iter().map(|acc| acc.pubkey.to_string()).collect(),
-        instruction_data: general_purpose::STANDARD.encode(&instruction.data),
+        instruction_data: instruction.data.iter().map(|b| format!("{:02x}", b)).collect::<String>(),
     };
 
     (StatusCode::OK, ResponseJson(ApiResponse::success(response_data)))
@@ -66,7 +65,7 @@ pub async fn send_token(
     };
     
     let amount = match req.amount {
-        Some(val) if val > 0 => val,
+        Some(val) => val,
         _ => return (StatusCode::BAD_REQUEST, ResponseJson(ApiResponse::error("Missing required fields".to_string()))),
     };
 
@@ -106,13 +105,14 @@ pub async fn send_token(
         .map(|acc| TokenAccountInfo {
             pubkey: acc.pubkey.to_string(),
             is_signer: acc.is_signer,
+            is_writable: acc.is_writable,
         })
         .collect();
 
     let response_data = TokenTransferData {
         program_id: instruction.program_id.to_string(),
         accounts,
-        instruction_data: general_purpose::STANDARD.encode(&instruction.data),
+        instruction_data: instruction.data.iter().map(|b| format!("{:02x}", b)).collect::<String>(),
     };
 
     (StatusCode::OK, ResponseJson(ApiResponse::success(response_data)))

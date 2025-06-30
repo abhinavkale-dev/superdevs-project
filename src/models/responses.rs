@@ -80,4 +80,6 @@ pub struct TokenAccountInfo {
     pub pubkey: String,
     #[serde(rename = "isSigner")]
     pub is_signer: bool,
+    #[serde(rename = "isWritable")]
+    pub is_writable: bool,
 } 
