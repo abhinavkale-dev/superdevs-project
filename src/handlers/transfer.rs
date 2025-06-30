@@ -2,7 +2,7 @@ use axum::{extract::Json, http::StatusCode, response::Json as ResponseJson};
 use solana_program::system_instruction;
 use spl_token::instruction as token_instruction;
 
-use crate::models::{ApiResponse, SendSolRequest, SendTokenRequest, SolTransferData, TokenTransferData, TokenAccountInfo};
+use crate::models::{ApiResponse, SendSolRequest, SendTokenRequest, SolTransferData, TokenTransferData, SendTokenAccountInfo};
 use crate::utils::{parse_pubkey};
 
 pub async fn send_sol(
@@ -39,7 +39,7 @@ pub async fn send_sol(
     let response_data = SolTransferData {
         program_id: instruction.program_id.to_string(),
         accounts: instruction.accounts.iter().map(|acc| acc.pubkey.to_string()).collect(),
-        instruction_data: instruction.data.iter().map(|b| format!("{:02x}", b)).collect::<String>(),
+        instruction_data: "instruction_data".to_string(),
     };
 
     (StatusCode::OK, ResponseJson(ApiResponse::success(response_data)))
@@ -102,17 +102,16 @@ pub async fn send_token(
     let accounts = instruction
         .accounts
         .into_iter()
-        .map(|acc| TokenAccountInfo {
+        .map(|acc| SendTokenAccountInfo {
             pubkey: acc.pubkey.to_string(),
             is_signer: acc.is_signer,
-            is_writable: acc.is_writable,
         })
         .collect();
 
     let response_data = TokenTransferData {
         program_id: instruction.program_id.to_string(),
         accounts,
-        instruction_data: instruction.data.iter().map(|b| format!("{:02x}", b)).collect::<String>(),
+        instruction_data: "instruction_data".to_string(),
     };
 
     (StatusCode::OK, ResponseJson(ApiResponse::success(response_data)))

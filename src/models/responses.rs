@@ -71,8 +71,15 @@ pub struct SolTransferData {
 #[derive(Serialize)]
 pub struct TokenTransferData {
     pub program_id: String,
-    pub accounts: Vec<TokenAccountInfo>,
+    pub accounts: Vec<SendTokenAccountInfo>,
     pub instruction_data: String,
+}
+
+#[derive(Serialize)]
+pub struct SendTokenAccountInfo {
+    pub pubkey: String,
+    #[serde(rename = "isSigner")]
+    pub is_signer: bool,
 }
 
 #[derive(Serialize)]
