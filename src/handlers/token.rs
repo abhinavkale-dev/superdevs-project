@@ -67,7 +67,7 @@ pub async fn mint_token(
     };
     
     let amount = match req.amount {
-        Some(val) => val,
+        Some(val) if val > 0 => val,
         _ => return (StatusCode::BAD_REQUEST, ResponseJson(ApiResponse::error("Missing required fields".to_string()))),
     };
 
